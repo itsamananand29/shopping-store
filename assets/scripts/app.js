@@ -1,19 +1,25 @@
+class Product{
+    constructor(name,imageUrl,price,description){
+        this.name = name;
+        this.imageUrl = imageUrl; 
+        this.price = price;
+        this.description = description;
+    }
+}
 const productsList ={
     products:[
-        {
-            id:0,
-            name:'Pillows',
-            imageUrl:'https://th.bing.com/th/id/OIP.DnCGtHj_-3GzszUOoz680AHaHa?w=172&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7',
-            price:700,
-            description:'A very comfortable pillow'
-        },
-        {
-            id:1,
-            name:'Sheets',
-            imageUrl:'https://th.bing.com/th/id/OIP.s4nKcEB_towFosNXclUQtgHaHa?w=191&h=191&c=7&r=0&o=5&dpr=1.5&pid=1.7',
-            price:900,
-            description:'Classy looking bed sheets'
-        }
+        new Product(
+            'Pillows',
+            'https://th.bing.com/th/id/OIP.DnCGtHj_-3GzszUOoz680AHaHa?w=172&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7',
+            700,
+            'A very comfortable pillow'
+        ),
+        new Product(
+            'Sheets',
+            'https://th.bing.com/th/id/OIP.s4nKcEB_towFosNXclUQtgHaHa?w=191&h=191&c=7&r=0&o=5&dpr=1.5&pid=1.7',
+            900,
+            'Classy looking bed sheets'
+        )
     ],
     render:function(){
         const renderHook = $('#app');
