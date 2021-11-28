@@ -99,6 +99,10 @@ class ShoppingCart extends Component{
         const sum = this.items.reduce((a,b)=>(+a + +b.price),0);
         return sum;
     }
+    orderProducts(){
+        console.log(this.items);
+        console.log(this.totalAmount());
+    }
     addProduct(product){
         this.items.push(product);
         $(this.totalOutput).html(`<h2>Total: \$${this.totalAmount().toFixed(2)}</h2>`);                  
@@ -112,6 +116,8 @@ class ShoppingCart extends Component{
             `
         );
         this.totalOutput = $(cart).find('h2');
+        const orderBtn= $(cart).find('button');
+        orderBtn.on('click',()=>this.orderProducts());
     }
 }
 class Shop extends Component{
