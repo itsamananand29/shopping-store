@@ -6,16 +6,40 @@ class Product{
         this.description = description;
     }
 }
-class ProductItem{
-    constructor(prod){
+class ElementAttributes{
+    constructor(attr,val){
+        this.attr= attr;
+        this.val=val;
+    }
+}
+class Component{
+    constructor(hookId){
+        this.hookId = hookId;
+    }
+    createRootElement(tag,classNames,...attributes){
+        const rootEl = document.createElement(tag);
+        if(classNames){
+            $(rootEl).addClass(classNames);
+        }
+        if(attributes && attributes.length>0){
+            attributes.forEach(a=>{
+                $(rootEl).attr(a.attr,a.val);
+            })
+        }
+        $(this.hookId).append(rootEl);
+        return rootEl;
+    }
+}
+class ProductItem extends Component{
+    constructor(prod,hookId){
+        super(hookId);
         this.prod = prod;
     }
     addToCart(prod){
         App.addProductToCart(prod);
     }
     render(){
-        const prodEl = document.createElement('li');
-        $(prodEl).addClass('product-item');
+        const prodEl = this.createRootElement('li','product-item');
         $(prodEl).html(`
         <div>
             <img src =${this.prod.imageUrl} alt=${this.prod.name}/>
@@ -29,10 +53,9 @@ class ProductItem{
         </div>`);
         const addToCart = $(prodEl).find('button');
         addToCart.click(()=>this.addToCart(this.prod));
-        return prodEl;     
     }
 }
-class ProductsList{
+class ProductsList extends Component{
     products=[
         new Product(
             'Pillows',
@@ -47,18 +70,22 @@ class ProductsList{
             'Classy looking bed sheets'
         )
     ];
+    constructor(hookId){
+        super(hookId);
+    }
     render(){
-        const prodList = document.createElement('ul');
-        $(prodList).addClass('product-list');
+        const prodList = this.createRootElement('ul','product-list',new ElementAttributes('id','product-list'));
         this.products.forEach(prod=>{
-            const productItem = new ProductItem(prod); 
+            const productItem = new ProductItem(prod,'#product-list'); 
             $(prodList).append(productItem.render());
         });
-        return prodList;
     }
 }
-class ShoppingCart{
+class ShoppingCart extends Component{
     items =[];
+    constructor(hookId){
+        super(hookId);
+    }
     totalAmount(){
         const sum = this.items.reduce((a,b)=>(+a + +b.price),0);
         return sum;
@@ -68,8 +95,7 @@ class ShoppingCart{
         $(this.totalOutput).html(`<h2>Total: \$${this.totalAmount().toFixed(2)}</h2>`);                  
     }
     render(){
-        const cart = document.createElement('div');
-        $(cart).addClass('cart');
+        const cart = this.createRootElement('div','cart');
         $(cart).html(
             `
             <h2>Total: \$${0}</h2>
@@ -77,17 +103,14 @@ class ShoppingCart{
             `
         );
         this.totalOutput = $(cart).find('h2');
-        return cart
     }
 }
-class Shop{
-
+class Shop extends Component{
     render(){
-    const renderHook = $('#app');    
-    this.cart = new ShoppingCart();
-    this.productsList = new ProductsList();
-    renderHook.append(this.cart.render());   
-    renderHook.append(this.productsList.render());
+    this.cart = new ShoppingCart('#app');
+    this.productsList = new ProductsList('#app');
+    this.cart.render();   
+    this.productsList.render();
     }
     
 }
