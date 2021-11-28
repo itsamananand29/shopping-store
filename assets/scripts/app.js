@@ -13,9 +13,11 @@ class ElementAttributes{
     }
 }
 class Component{
-    constructor(hookId){
+    constructor(hookId , shouldRender=true){
         this.hookId = hookId;
+        shouldRender && this.render();
     }
+    render(){}
     createRootElement(tag,classNames,...attributes){
         const rootEl = document.createElement(tag);
         if(classNames){
@@ -32,8 +34,9 @@ class Component{
 }
 class ProductItem extends Component{
     constructor(prod,hookId){
-        super(hookId);
+        super(hookId,false);
         this.prod = prod;
+        this.render()
     }
     addToCart(prod){
         App.addProductToCart(prod);
@@ -56,29 +59,35 @@ class ProductItem extends Component{
     }
 }
 class ProductsList extends Component{
-    products=[
-        new Product(
-            'Pillows',
-            'https://th.bing.com/th/id/OIP.DnCGtHj_-3GzszUOoz680AHaHa?w=172&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7',
-            700,
-            'A very comfortable pillow'
-        ),
-        new Product(
-            'Sheets',
-            'https://th.bing.com/th/id/OIP.s4nKcEB_towFosNXclUQtgHaHa?w=191&h=191&c=7&r=0&o=5&dpr=1.5&pid=1.7',
-            900,
-            'Classy looking bed sheets'
-        )
-    ];
     constructor(hookId){
         super(hookId);
+        this.fetchProducts();
+    }
+    fetchProducts(){
+        this.products=[
+            new Product(
+                'Pillows',
+                'https://th.bing.com/th/id/OIP.DnCGtHj_-3GzszUOoz680AHaHa?w=172&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7',
+                700,
+                'A very comfortable pillow'
+            ),
+            new Product(
+                'Sheets',
+                'https://th.bing.com/th/id/OIP.s4nKcEB_towFosNXclUQtgHaHa?w=191&h=191&c=7&r=0&o=5&dpr=1.5&pid=1.7',
+                900,
+                'Classy looking bed sheets'
+            )
+        ];
+        this.renderProducts();
+    }
+    renderProducts(){
+        this.products.forEach(prod=>{
+            new ProductItem(prod,'#product-list'); 
+        });
     }
     render(){
-        const prodList = this.createRootElement('ul','product-list',new ElementAttributes('id','product-list'));
-        this.products.forEach(prod=>{
-            const productItem = new ProductItem(prod,'#product-list'); 
-            $(prodList).append(productItem.render());
-        });
+        this.createRootElement('ul','product-list',new ElementAttributes('id','product-list'));
+        this.products && this.products.length>0 && this.renderProducts();
     }
 }
 class ShoppingCart extends Component{
@@ -106,18 +115,18 @@ class ShoppingCart extends Component{
     }
 }
 class Shop extends Component{
+    constructor(){
+        super();
+    }
     render(){
     this.cart = new ShoppingCart('#app');
     this.productsList = new ProductsList('#app');
-    this.cart.render();   
-    this.productsList.render();
     }
     
 }
 class App{
     static init(){
         const shop = new Shop();
-        shop.render();
         this.cart = shop.cart;
     }
     static addProductToCart(product){
